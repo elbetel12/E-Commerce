@@ -19,6 +19,8 @@ import { logError } from './hooks/log-error'
 import { mongodb } from './mongodb'
 import { services } from './services/index'
 import { channels } from './channels'
+import authentication from './authentication';
+
 
 const app: Application = express(feathers())
 
@@ -39,6 +41,8 @@ app.configure(
     }
   })
 )
+app.configure(authentication)
+
 app.configure(mongodb)
 app.configure(services)
 app.configure(channels)

@@ -2,6 +2,7 @@
 import { authenticate } from '@feathersjs/authentication'
 
 import { hooks as schemaHooks } from '@feathersjs/schema'
+import { hashPasswordHook, setDefaultRole } from './hooks/before.hooks';
 
 import {
   usersDataValidator,
@@ -34,7 +35,6 @@ export const users = (app: Application) => {
   app.service(usersPath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
         schemaHooks.resolveExternal(usersExternalResolver),
         schemaHooks.resolveResult(usersResolver)
       ]
@@ -42,10 +42,10 @@ export const users = (app: Application) => {
     before: {
       all: [schemaHooks.validateQuery(usersQueryValidator), schemaHooks.resolveQuery(usersQueryResolver)],
       find: [],
-      get: [],
-      create: [schemaHooks.validateData(usersDataValidator), schemaHooks.resolveData(usersDataResolver)],
-      patch: [schemaHooks.validateData(usersPatchValidator), schemaHooks.resolveData(usersPatchResolver)],
-      remove: []
+      get: [authenticate('jwt')],
+      create: [setDefaultRole, hashPasswordHook,schemaHooks.validateData(usersDataValidator), schemaHooks.resolveData(usersDataResolver)],
+      patch: [authenticate('jwt'),hashPasswordHook , schemaHooks.validateData(usersPatchValidator), schemaHooks.resolveData(usersPatchResolver)],
+      remove: [authenticate('jwt')]
     },
     after: {
       all: []

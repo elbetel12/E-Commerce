@@ -1,10 +1,15 @@
-import { AuthenticationService, JWTStrategy } from '@feathersjs/authentication'
-import { LocalStrategy } from '@feathersjs/authentication-local'
-import type { Application } from './declarations'
+import { AuthenticationService, JWTStrategy } from '@feathersjs/authentication';
+import { LocalStrategy } from '@feathersjs/authentication-local';
+import type { Application } from './declarations';
 
-export const authentication = (app : Application) => {
-    const auth = new AuthenticationService(app)
-    auth.register('jwt', new JWTStrategy())
-    auth.register('local', new LocalStrategy())
-    app.use('/authentication', auth as any)
-    }
+export default function (app: Application) {
+  const authService = new AuthenticationService(app);
+
+  authService.register('jwt', new JWTStrategy());
+  authService.register('local', new LocalStrategy());
+
+  // Register the service with configure
+  app.configure(() => {
+    app.use('authentication', authService as any);
+  });
+}

@@ -1,9 +1,11 @@
-import bcrypt from 'bcryptjs'
-import type { HookContext } from '@feathersjs/feathers'
+import type { HookContext } from '../../../declarations';
+import { hooks as authHooks } from '@feathersjs/authentication-local';
 
-export const hashPasswordHook = async (context: HookContext) => {
-  if (context.data.password) {
-    context.data.password = await bcrypt.hash(context.data.password, 10)
+export const hashPasswordHook = authHooks.hashPassword('password');
+
+export const setDefaultRole = (context: HookContext) => {
+  if (context.data && !context.data.role) {
+    context.data.role = 'user';
   }
-  return context
-}
+  return context;
+};

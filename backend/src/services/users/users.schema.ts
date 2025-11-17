@@ -23,7 +23,12 @@ export const usersResolver = resolve<Users, HookContext<UsersService>>({})
 export const usersExternalResolver = resolve<Users, HookContext<UsersService>>({})
 
 // Schema for creating new entries
-export const usersDataSchema = Type.Pick(usersSchema, ['name', 'email', 'password', 'role'], { $id: 'UsersData' })
+export const usersDataSchema = Type.Object({
+  name: Type.String(),
+  email: Type.String({ format: 'email' }),
+  password: Type.String(),
+  role: Type.Optional(Type.Union([Type.Literal('user'), Type.Literal('admin')]))
+}, { $id: 'UsersData' })
 export type UsersData = Static<typeof usersDataSchema>
 export const usersDataValidator = getValidator(usersDataSchema, dataValidator)
 export const usersDataResolver = resolve<UsersData, HookContext<UsersService>>({})
